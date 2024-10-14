@@ -1,0 +1,27 @@
+﻿@model SocialNet.Models.User
+
+@{
+    ViewData["Title"] = "Criar conta";
+}
+
+<h2>Crie sua conta</h2>
+
+<form asp-action="Register" method="post">
+    <div class="form-group">
+        <label asp-for="Username"></label>
+        <input asp-for="Username" class="form-control" />
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input type="password" asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <br/>
+    <input type="submit" class="btn btn-primary" value="Registrar" />
+</form>

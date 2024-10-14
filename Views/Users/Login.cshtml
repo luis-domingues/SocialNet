@@ -1,0 +1,23 @@
+﻿@model SocialNet.Models.User
+
+@{
+ViewData["Title"] = "Login";
+}
+
+<h2>Entre na sua conta</h2>
+
+<form asp-action="Login" method="post">
+    <div class="form-group">
+        <label asp-for="Email">Email</label>
+        <input type="email" class="form-control" asp-for="Email" id="email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password">Senha</label>
+        <input type="password" class="form-control" asp-for="Password" id="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <br/>
+    <input type="submit" class="btn btn-primary" value="Entrar" />
+    <a asp-action="ForgotPassword" asp-controller="Users" class="btn btn-link">Esqueceu sua senha?</a>
+</form>
