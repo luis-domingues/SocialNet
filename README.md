@@ -2,7 +2,7 @@
 
 **Connect with others by writing your ideas.**
 
-SocialNET is a web application inspired by Twitter/X and Bluesky, allowing users to connect and share their experiences. This project serves as the frontend for my API `SocialNetApi`, focusing on user registration and login functionalities.
+SocialNET is a web application inspired by Twitter/X and Bluesky, allowing users to connect and share their experiences. This project serves as the frontend for my API [`SocialNetApi`](https://github.com/luis-domingues/social-net-api), focusing on user registration and login functionalities.
 
 [Getting Started](#usage) •
 [Installation](#installation) •
