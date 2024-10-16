@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SocialNet.Context;
 using SocialNet.Models;
 
@@ -42,7 +47,7 @@ public class UsersController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Login(User user)
+    public async Task<IActionResult> Login(User user)
     {
         var existingUser = _context.Users
             .FirstOrDefault(u => u.Email == user.Email);
@@ -52,7 +57,21 @@ public class UsersController : Controller
             var result = _passwordHasher.VerifyHashedPassword(existingUser, existingUser.Password, user.Password);
 
             if (result == PasswordVerificationResult.Success)
-                return RedirectToAction("Index", "Home");
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, existingUser.Username),
+                    new Claim(ClaimTypes.Email, existingUser.Email),
+                    new Claim("UserId", existingUser.Id.ToString())
+                };
+
+                var identity = new ClaimsIdentity(claims, "CookieAuth");
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync("CookieAuth", principal);
+
+                return RedirectToAction("Index", "Feed");
+            }
         }
         
         ModelState.AddModelError(string.Empty, "Credenciais inválidas.");
@@ -111,5 +130,55 @@ public class UsersController : Controller
 
         ViewBag.Message = "Senha redefinida com sucesso!";
         return RedirectToAction("Login");
+    }
+    
+    [Authorize]
+    public IActionResult Profile()
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+
+        var user = _context.Users
+            .Include(u => u.Posts)
+            .FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+            return NotFound();
+
+        return View(user); 
+    }
+
+    [Authorize]
+    public IActionResult EditProfile()
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+            return NotFound();
+
+        return View(user);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public async Task<IActionResult> EditProfile(User updatedUser)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+            return NotFound();
+
+        if (ModelState.IsValid)
+        {
+            user.Username = updatedUser.Username;
+            user.Email = updatedUser.Email;
+        
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Profile");
+        }
+
+        return View(updatedUser);
     }
 }
