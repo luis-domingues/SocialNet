@@ -1,0 +1,34 @@
+﻿@model SocialNet.Models.User
+
+@{
+    ViewData["Title"] = "Perfil";
+}
+
+<div class="container">
+    <h2>@Model.Username</h2>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="card-title">@Model.Username</h4>
+            <p class="card-text">Email: @Model.Email</p>
+            <a asp-action="EditProfile" class="btn btn-primary">Editar Perfil</a>
+        </div>
+    </div>
+    <div>
+        @if (Model.Posts.Any())
+        {
+        @foreach (var post in Model.Posts.OrderByDescending(p => p.CreateAt))
+        {
+        <div class="card mb-3">
+            <div class="card-body">
+                <p class="card-text">@post.Content</p>
+                <p class="text-muted">@post.CreateAt.ToString("g")</p>
+            </div>
+        </div>
+        }
+        }
+        else
+        {
+        <p>Você ainda não criou nenhum post.</p>
+        }
+    </div>
+</div>
