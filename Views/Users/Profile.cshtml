@@ -1,11 +1,12 @@
 ﻿@model SocialNet.Models.User
 
 @{
-    ViewData["Title"] = "Perfil";
+ViewData["Title"] = "Perfil";
 }
 
 <div class="container">
-    <h2>@Model.Username</h2>
+    <h2>Perfil de @Model.Username</h2>
+
     <div class="card mb-4">
         <div class="card-body">
             <h4 class="card-title">@Model.Username</h4>
@@ -13,18 +14,20 @@
             <a asp-action="EditProfile" class="btn btn-primary">Editar Perfil</a>
         </div>
     </div>
+
+    <h3>Seus Posts</h3>
     <div>
         @if (Model.Posts.Any())
         {
-        @foreach (var post in Model.Posts.OrderByDescending(p => p.CreateAt))
-        {
-        <div class="card mb-3">
-            <div class="card-body">
-                <p class="card-text">@post.Content</p>
-                <p class="text-muted">@post.CreateAt.ToString("g")</p>
-            </div>
-        </div>
-        }
+            @foreach (var post in Model.Posts.OrderByDescending(p => p.CreateAt))
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p class="card-text">@post.Content</p>
+                        <p class="text-muted">@post.CreateAt.ToString("g")</p>
+                    </div>
+                </div>
+            }
         }
         else
         {
