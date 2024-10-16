@@ -1,0 +1,15 @@
+﻿@model SocialNet.Models.Post
+
+@{
+    ViewData["Title"] = "Criar Post";
+}
+
+<form asp-action="CreatePost" method="post">
+    <div class="form-group">
+        <label asp-for="Content">O que há de novo?</label>
+        <textarea asp-for="Content" class="form-control" rows="3" required></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <br />
+    <input type="submit" value="Postar" class="btn btn-primary"/>
+</form>
