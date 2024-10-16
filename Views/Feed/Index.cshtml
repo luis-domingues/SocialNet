@@ -1,0 +1,22 @@
+﻿@model List<SocialNet.Models.Post>
+
+@{
+    ViewData["Title"] = "Feed";
+}
+
+<div class="container">
+    <h2>SocialNET</h2>
+    <a asp-action="CreatePost" class="btn btn-primary">Novo post</a>
+    <div class="mt-4">
+        @foreach (var post in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4 class="card-title">@post.User.Username</h4>
+                    <p class="card-text">@post.Content</p>
+                    <p class="text-muted">@post.CreateAt.ToString("g")</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
