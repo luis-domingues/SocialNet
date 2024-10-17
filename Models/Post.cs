@@ -15,4 +15,7 @@ public class Post
     [ForeignKey("User")]
     public int UserId { get; set; }
     public User User { get; set; }
+    
+    public ICollection<Like> Likes { get; set; }
+    public IEnumerable<Comment> Comments { get; set; }
 }
