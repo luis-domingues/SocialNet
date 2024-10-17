@@ -15,7 +15,40 @@
                     <h4 class="card-title">@post.User.Username</h4>
                     <p class="card-text">@post.Content</p>
                     <p class="text-muted">@post.CreateAt.ToString("g")</p>
-                </div>
+                    <p>Curtidas: @post.Likes.Count()</p>
+                    <form asp-action="ToggleLike" method="post" class="d-inline">
+                        <input type="hidden" name="postId" value="@post.Id" />
+                        <button type="submit" class="btn btn-sm @post.Likes.Any(l => l.UserId == int.Parse(User.Claims.First(c => c.Type == "UserId").Value))? btn-danger : btn-primary">
+                            @if (post.Likes.Any(l => l.UserId == int.Parse(User.Claims.First(c => c.Type == "UserId").Value)))
+                            {
+                                <span>Descurtir</span>
+                            }
+                            else
+                            {
+                                <span>Curtir</span>
+                            }
+                        </button>
+                    </form>
+                    <hr />
+                    <h5>Comentários</h5>
+                    <div>
+                        @foreach (var comment in post.Comments.OrderBy(c => c.CommentedAt))
+                        {
+                            <div class="mb-2">
+                                <strong>@comment.User.Username</strong>: @comment.Content
+                                <p class="text-muted">@comment.CommentedAt.ToString("g")</p>
+                            </div>
+                        }
+                    </div>
+                    <form asp-action="AddComment" method="post" class="mt-2">
+                        <input type="hidden" name="postId" value="@post.Id" />
+                        <div class="form-group">
+                            <textarea name="content" class="form-control" placeholder="Diga algo..." required></textarea>
+                        </div>
+                        <br />
+                        <input type="submit" value="Comentar" class="btn btn-sm btn-primary mt-1"/>
+                    </form>
+                    </div>
             </div>
         }
     </div>
