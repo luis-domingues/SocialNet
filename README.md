@@ -14,6 +14,10 @@ SocialNET is a web application inspired by Twitter/X and Bluesky, allowing users
 - Security - User passwords are stored securely using hashing techniques, ensuring that passwords are encrypted before being saved to the database.
 - Scalable - This project is designed to expand with additional functionalities in the future.
 
+## Updates
+* Implemented the `user's personal feed` controller, with a post posting section, `likes`, and `comments` on posts.
+* Implemented the `user profile`, where the user's information is detailed.
+
 ## Usage
 
 ### Installation
