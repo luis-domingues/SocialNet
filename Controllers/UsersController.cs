@@ -139,11 +139,13 @@ public class UsersController : Controller
 
         var user = _context.Users
             .Include(u => u.Posts)
+            .Include(u => u.Followers)
+            .Include(u => u.Following)
             .FirstOrDefault(u => u.Id == userId);
 
         if (user == null)
             return NotFound();
-
+        
         return View(user); 
     }
 
@@ -180,5 +182,74 @@ public class UsersController : Controller
         }
 
         return View(updatedUser);
+    }
+    
+    public IActionResult Following()
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+
+        var following = _context.Follows
+            .Where(f => f.FollowerId == userId)
+            .Include(f => f.Followed)
+            .Select(f => f.Followed)
+            .ToList();
+
+        return View(following);
+    }
+    
+    public IActionResult Followers()
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+
+        var followers = _context.Follows
+            .Where(f => f.FollowedId == userId)
+            .Include(f => f.Follower)
+            .Select(f => f.Follower)
+            .ToList();
+
+        return View(followers);
+    }
+    
+    public IActionResult Search(string query)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+
+        var users = _context.Users
+            .Where(u => u.Username.Contains(query) || u.Email.Contains(query) && u.Id != userId)
+            .ToList();
+        
+        var followingIds = _context.Follows
+            .Where(f => f.FollowerId == userId)
+            .Select(f => f.FollowedId)
+            .ToList();
+        
+        ViewBag.FollowingIds = followingIds;
+        return View(users);
+    }
+
+    [HttpPost]
+    public IActionResult ToggleFollow(int userId)
+    {
+        var currentUserId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+
+        if (currentUserId == userId)
+            return BadRequest();
+
+        var follow = _context.Follows.FirstOrDefault(f => f.FollowerId == currentUserId && f.FollowedId == userId);
+
+        if (follow == null)
+        {
+            follow = new Follow
+            {
+                FollowerId = currentUserId,
+                FollowedId = userId
+            };
+            _context.Follows.Add(follow);
+        }
+        else
+            _context.Follows.Remove(follow);
+
+        _context.SaveChanges();
+        return RedirectToAction("Search", new { query = "" });
     }
 }
