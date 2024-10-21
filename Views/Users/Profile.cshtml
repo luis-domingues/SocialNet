@@ -11,6 +11,24 @@ ViewData["Title"] = "Perfil";
         <div class="card-body">
             <h4 class="card-title">@Model.Username</h4>
             <p class="card-text">Email: @Model.Email</p>
+            <p>Seguidores: <a asp-action="Followers">@Model.Followers.Count()</a></p>
+            <p>Seguindo: <a asp-action="Following">@Model.Following.Count()</a></p>
+            @if (Model.Id != int.Parse(User.Claims.First(c => c.Type == "UserId").Value))
+            {
+                <form asp-action="ToggleFollow" asp-controller="Users" method="post">
+                    <input type="hidden" name="userId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary">
+                        @if (Model.Followers.Any(f => f.FollowerId == int.Parse(User.Claims.First(c => c.Type == "UserId").Value)))
+                        {
+                            <span>Deixar de seguir</span>
+                        }
+                        else
+                        {
+                            <span>Seguir</span>
+                        }
+                    </button>
+                </form>
+            }
             <a asp-action="EditProfile" class="btn btn-primary">Editar Perfil</a>
         </div>
     </div>
