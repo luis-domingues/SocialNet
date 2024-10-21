@@ -20,5 +20,7 @@ public class User
     public string Password { get; set; }
     
     public ICollection<Post> Posts { get; set; }
+    public ICollection<Follow> Followers { get; set; }
+    public ICollection<Follow> Following { get; set; }
 }
 
