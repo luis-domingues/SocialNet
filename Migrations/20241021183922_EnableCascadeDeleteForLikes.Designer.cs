@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialNet.Context;
 
@@ -11,9 +12,11 @@ using SocialNet.Context;
 namespace SocialNet.Migrations
 {
     [DbContext(typeof(SocialNetDbContext))]
-    partial class SocialNetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241021183922_EnableCascadeDeleteForLikes")]
+    partial class EnableCascadeDeleteForLikes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +160,7 @@ namespace SocialNet.Migrations
                     b.HasOne("SocialNet.Models.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SocialNet.Models.User", "User")
