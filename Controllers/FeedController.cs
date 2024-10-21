@@ -18,10 +18,19 @@ public class FeedController : Controller
 
     public IActionResult Index()
     {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+
+        var followedUserIds = _context.Follows
+            .Where(f => f.FollowerId == userId)
+            .Select(f => f.FollowedId)
+            .ToList();
+
         var posts = _context.Posts
             .Include(p => p.User)
             .Include(p => p.Likes)
-            .Include(p => p.Comments).ThenInclude(c => c.User)
+            .Include(p => p.Comments)
+            .ThenInclude(c => c.User)
+            .Where(p => followedUserIds.Contains(p.UserId) || p.UserId == userId)
             .OrderByDescending(p => p.CreateAt)
             .ToList();
 
