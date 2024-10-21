@@ -1,0 +1,23 @@
+﻿@model List<SocialNet.Models.User>
+
+@{
+    ViewData["Title"] = "Seguindo";
+}
+
+<h2>Usuários que você está seguindo</h2>
+
+@if (Model.Count > 0)
+{
+    <ul class="list-group">
+        @foreach (var user in Model)
+        {
+            <li class="list-group-item">
+                <a asp-action="Profile" asp-route-userId="@user.Id">@user.Username</a> (@user.Email)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Você ainda não está seguindo ninguém.</p>
+}
