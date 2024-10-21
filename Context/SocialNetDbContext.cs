@@ -11,6 +11,7 @@ public class SocialNetDbContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Like> Likes { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Follow> Follows { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,7 +21,7 @@ public class SocialNetDbContext : DbContext
             .HasOne(l => l.Post)
             .WithMany(p => p.Likes)
             .HasForeignKey(l => l.PostId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Like>()
             .HasOne(l => l.User)
@@ -32,13 +33,24 @@ public class SocialNetDbContext : DbContext
             .HasOne(c => c.Post)
             .WithMany(p => p.Comments)
             .HasForeignKey(c => c.PostId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.User)
             .WithMany()
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.NoAction);
-    }
 
+        modelBuilder.Entity<Follow>()
+            .HasOne(f => f.Followed)
+            .WithMany(u => u.Followers)
+            .HasForeignKey(f => f.FollowedId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Follow>()
+            .HasOne(f => f.Follower)
+            .WithMany(u => u.Following)
+            .HasForeignKey(f => f.FollowerId)
+            .OnDelete(DeleteBehavior.NoAction);
+    }
 }
