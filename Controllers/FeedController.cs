@@ -89,4 +89,54 @@ public class FeedController : Controller
 
         return RedirectToAction("Index");
     }
+
+    public IActionResult EditPost(int postId)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+        var post = _context.Posts.FirstOrDefault(p => p.Id == postId && p.UserId == userId);
+
+        if (post == null)
+            return NotFound();
+        
+
+        return View(post);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult EditPost(Post updatedPost)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+        var post = _context.Posts.FirstOrDefault(p => p.Id == updatedPost.Id && p.UserId == userId);
+
+        if (post == null)
+            return NotFound();
+        
+
+        if (ModelState.IsValid)
+        {
+            post.Content = updatedPost.Content;
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        return View(updatedPost);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeletePost(int postId)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+        var post = _context.Posts.FirstOrDefault(p => p.Id == postId && p.UserId == userId);
+
+        if (post == null)
+            return NotFound();
+        
+
+        _context.Posts.Remove(post);
+        _context.SaveChanges();
+
+        return RedirectToAction("Index");
+    }
 }
