@@ -491,7 +491,7 @@ fabric.properties
 
 # User-specific files
 */.idea.SocialNet.dir
-appsettings.Development.json
+appsettings.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 
