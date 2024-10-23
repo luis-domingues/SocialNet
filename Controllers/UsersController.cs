@@ -252,4 +252,34 @@ public class UsersController : Controller
         _context.SaveChanges();
         return RedirectToAction("Search", new { query = "" });
     }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteAccount()
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+        var user = _context.Users
+            .Include(u => u.Comments)
+            .Include(u => u.Posts)
+            .FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var likes = _context.Likes.Where(l => l.UserId == userId).ToList();
+        _context.Likes.RemoveRange(likes);
+
+        var comments = _context.Comments.Where(c => c.UserId == userId).ToList();
+        _context.Comments.RemoveRange(comments);
+
+        var followerRelations = _context.Follows.Where(f => f.FollowerId == userId || f.FollowedId == userId).ToList();
+        _context.Follows.RemoveRange(followerRelations);
+
+        _context.Users.Remove(user);
+        _context.SaveChanges();
+
+        return RedirectToAction("Index", "Home");
+    }
 }
