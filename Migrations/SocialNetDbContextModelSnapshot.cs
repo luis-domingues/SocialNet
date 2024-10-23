@@ -161,7 +161,7 @@ namespace SocialNet.Migrations
                         .IsRequired();
 
                     b.HasOne("SocialNet.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -229,6 +229,8 @@ namespace SocialNet.Migrations
 
             modelBuilder.Entity("SocialNet.Models.User", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Followers");
 
                     b.Navigation("Following");
