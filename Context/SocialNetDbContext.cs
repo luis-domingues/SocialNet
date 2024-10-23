@@ -37,9 +37,15 @@ public class SocialNetDbContext : DbContext
 
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.User)
-            .WithMany()
+            .WithMany(u => u.Comments)
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Post>()
+            .HasOne(p => p.User)
+            .WithMany(u => u.Posts)
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Follow>()
             .HasOne(f => f.Followed)
