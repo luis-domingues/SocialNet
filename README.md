@@ -15,8 +15,11 @@ SocialNET is a web application inspired by Twitter/X and Bluesky, allowing users
 - Scalable - This project is designed to expand with additional functionalities in the future.
 
 ## Updates
-* Implemented the `user's personal feed` controller, with a post posting section, `likes`, and `comments` on posts.
-* Implemented the `user profile`, where the user's information is detailed.
+
+* Improvement in the `user's personal feed`, being able to create, publish and view posts in the personal feed.
+* Added `edit`, `delete`, `like` and `comment` features to posts, as well as being able to follow or unfollow other profiles.
+* Added user profile tab.
+* Search bar.
 
 ## Usage
 
@@ -38,7 +41,7 @@ To install SocialNET, you can clone the repository and run it locally.
     ```
 
 ### Features in development
-Expanding functionalities such as post creation, comments, and news feeds.
+Real-time notification system.
 
 ## Contributing
 Feel free to contribute by opening an issue to report a bug or suggest improvements or features.
