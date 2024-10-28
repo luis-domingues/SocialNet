@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SocialNet.Context;
+using SocialNet.Hubs;
 using SocialNet.Models;
 
 namespace SocialNet.Controllers;
@@ -14,11 +16,13 @@ public class UsersController : Controller
 {
     private readonly SocialNetDbContext _context;
     private readonly PasswordHasher<User> _passwordHasher;
+    private readonly IHubContext<NotificationHub> _notificationHub;
 
-    public UsersController(SocialNetDbContext context)
+    public UsersController(SocialNetDbContext context, IHubContext<NotificationHub> notificationHub)
     {
         _context = context;
         _passwordHasher = new PasswordHasher<User>();
+        _notificationHub = notificationHub;
     }
     
     public IActionResult Register()
@@ -281,5 +285,36 @@ public class UsersController : Controller
         _context.SaveChanges();
 
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> FollowUser(int followedUserId)
+    {
+        var followerUserId = int.Parse(User.FindFirstValue("UserId"));
+        var follower = await _context.Users.FindAsync(followerUserId);
+
+        if (follower == null)
+            return BadRequest("Usuário seguidor não encontrado.");
+
+        var existingFollow = await _context.Follows
+            .FirstOrDefaultAsync(f => f.FollowerId == followerUserId && f.FollowedId == followedUserId);
+
+        if (existingFollow != null)
+            return BadRequest("Você já está seguindo este usuário.");
+        
+        var follow = new Follow
+        {
+            FollowerId = followerUserId,
+            FollowedId = followedUserId
+        };
+
+        _context.Follows.Add(follow);
+        await _context.SaveChangesAsync();
+
+        var message = $"@{follower.Username} te seguiu!";
+        Console.WriteLine($"Enviando notificação para usuário {followedUserId}: {message}");
+        await _notificationHub.Clients.User(followedUserId.ToString()).SendAsync("ReceiveNotification", message);
+
+        return Ok();
     }
 }
