@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SocialNet.Context;
+using SocialNet.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddAuthentication("CookieAuth").AddCookie("CookieAuth", options
 {
     options.LoginPath = "/Users/Login";
 });
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -28,6 +31,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllerRoute(
     name: "default",
