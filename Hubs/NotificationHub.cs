@@ -1,6 +1,11 @@
-﻿namespace SocialNet.Hubs;
+﻿using Microsoft.AspNetCore.SignalR;
 
-public class NotificationHub
+namespace SocialNet.Hubs;
+
+public class NotificationHub : Hub
 {
-    
+    public async Task SendNotification(string userId, string message)
+    {
+        await Clients.User(userId).SendAsync("ReceiveNotification", message);
+    }
 }
