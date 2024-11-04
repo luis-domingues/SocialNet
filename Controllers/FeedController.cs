@@ -83,21 +83,24 @@ public class FeedController : Controller
     }
 
     [HttpPost]
-    public IActionResult AddComment(int postId, string content)
+    public async Task<IActionResult> AddComment(int postId, string content, int? parentCommentId)
     {
         var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
         var comment = new Comment
         {
-            Content = content,
             PostId = postId,
-            UserId = userId
+            UserId = userId,
+            Content = content,
+            ParentCommentId = parentCommentId,
+            CommentedAt = DateTime.Now
         };
 
         _context.Comments.Add(comment);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", new { postId });
     }
+
 
     public IActionResult EditPost(int postId)
     {
