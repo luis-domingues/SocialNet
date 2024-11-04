@@ -1,0 +1,27 @@
+﻿@model SocialNet.Models.Comment
+
+<div class="comment">
+    <p>
+        <strong>
+            @(Model.User != null ? Model.User.Username : "Usuário desconhecido")
+        </strong>: @Model.Content
+    </p>
+    <p class="text-muted">@Model.CommentedAt.ToString("g")</p>
+    <form asp-action="AddComment" method="post" class="mt-2">
+        <input type="hidden" name="postId" value="@Model.PostId" />
+        <input type="hidden" name="parentCommentId" value="@Model.Id" />
+        <div class="form-group">
+            <textarea name="content" class="form-control" placeholder="Responder..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-sm btn-secondary mt-1">Responder</button>
+    </form>
+    <div class="replies ms-4">
+        @if (Model.Replies != null && Model.Replies.Any())
+        {
+            @foreach (var reply in Model.Replies)
+            {
+                @Html.Partial("_CommentPartial", reply)
+            }
+        }
+    </div>
+</div>
