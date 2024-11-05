@@ -19,7 +19,13 @@
         @foreach (var user in Model)
         {
             <div class="list-group-item">
-                <h5>@user.Username (@user.Email)</h5>
+                <h5>
+                    <a asp-action="ViewProfile" asp-controller="Users" asp-route-userId="@user.Id">
+                        @user.Username
+                    </a> 
+                    (@user.Email)
+                </h5>
+                
                 <form asp-action="ToggleFollow" method="post" class="mt-2">
                     <input type="hidden" name="userId" value="@user.Id" />
                     <button type="submit" class="btn btn-sm @(ViewBag.FollowingIds.Contains(user.Id) ? "btn-danger" : "btn-primary")">
