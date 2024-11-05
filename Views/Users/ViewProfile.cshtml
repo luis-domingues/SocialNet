@@ -1,0 +1,41 @@
+﻿@model SocialNet.Models.User
+
+@{
+    ViewData["Title"] = "Perfil";
+    var currentUserId = int.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+    var isFollowing = Model.Followers.Any(f => f.FollowerId == currentUserId);
+}
+
+<div class="container">
+    <h2>@Model.Username</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <p>Seguidores: @Model.Followers.Count</p>
+            <p>Seguindo: @Model.Following.Count</p>
+        </div>
+        <div class="mt-3">
+            @if (Model.Id != currentUserId)
+            {
+            <form asp-action="ToggleFollow" asp-controller="Users" asp-route-userId="@Model.Id" method="post">
+                <button type="submit" class="btn btn-sm @(isFollowing ? "btn-danger" : "btn-primary")">
+                    @(isFollowing ? "Deixar de seguir" : "Seguir")
+                </button>
+            </form>
+            }
+        </div>
+    </div>
+
+    <h3 class="mt-4">Posts de @Model.Username</h3>
+    <div>
+        @foreach (var post in Model.Posts)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text">@post.Content</p>
+                    <p class="text-muted">@post.CreateAt.ToString("g")</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
