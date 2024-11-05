@@ -317,4 +317,19 @@ public class UsersController : Controller
 
         return Ok();
     }
+
+    [HttpGet]
+    public IActionResult ViewProfile(int userId)
+    {
+        var user = _context.Users
+            .Include(u => u.Posts)
+            .Include(u => u.Followers)
+            .Include(u => u.Following)
+            .FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+            return NotFound();
+
+        return View(user);
+    }
 }
