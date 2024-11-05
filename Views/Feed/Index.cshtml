@@ -12,7 +12,11 @@
         {
             <div class="card mb-3">
                 <div class="card-body">
-                    <h4 class="card-title">@post.User.Username</h4>
+                    <h4 class="card-title">
+                        <a asp-action="ViewProfile" asp-controller="Users" asp-route-userId="@post.User.Id">
+                            @post.User.Username
+                        </a>
+                    </h4>
                     <p class="card-text">@post.Content</p>
                     <p class="text-muted">@post.CreateAt.ToString("g")</p>
 
@@ -45,7 +49,6 @@
                     <hr />
                     <h5>Comentários</h5>
                     <div>
-                        <!-- Exibir Comentários de Nível Superior -->
                         @foreach (var comment in post.Comments.Where(c => c.ParentCommentId == null).OrderBy(c => c.CommentedAt))
                         {
                             @Html.Partial("_CommentPartial", comment)
