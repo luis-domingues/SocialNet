@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SocialNet.Context;
+using SocialNet.Hubs;
 using SocialNet.Models;
 
 namespace SocialNet.Controllers;
@@ -10,10 +13,12 @@ namespace SocialNet.Controllers;
 public class FeedController : Controller
 {
     private readonly SocialNetDbContext _context;
+    private readonly IHubContext<NotificationHub> _notificationHub;
 
-    public FeedController(SocialNetDbContext context)
+    public FeedController(SocialNetDbContext context, IHubContext<NotificationHub> notificationHub)
     {
         _context = context;
+        _notificationHub = notificationHub;
     }
 
     public IActionResult Index()
@@ -59,7 +64,7 @@ public class FeedController : Controller
 
         return View(post);
     }
-
+    
     [HttpPost]
     public IActionResult ToggleLike(int postId)
     {
@@ -81,26 +86,66 @@ public class FeedController : Controller
         _context.SaveChanges();
         return RedirectToAction("Index");
     }
+    
+    public async Task<IActionResult> LikePost(int postId)
+{
+    var userId = int.Parse(User.FindFirstValue("UserId"));
+    var post = await _context.Posts.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == postId);
 
-    [HttpPost]
-    public async Task<IActionResult> AddComment(int postId, string content, int? parentCommentId)
+    if (post == null)
+        return NotFound();
+    
+
+    var like = new Like { UserId = userId, PostId = postId };
+    _context.Likes.Add(like);
+    await _context.SaveChangesAsync();
+
+    var notification = new Notification
     {
-        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-        var comment = new Comment
-        {
-            PostId = postId,
-            UserId = userId,
-            Content = content,
-            ParentCommentId = parentCommentId,
-            CommentedAt = DateTime.Now
-        };
+        UserId = post.UserId,
+        Type = NotificationType.Like,
+        PostId = postId,
+        Message = $"@{User.Identity.Name} curtiu seu post!"
+    };
+    _context.Notifications.Add(notification);
+    await _context.SaveChangesAsync();
 
-        _context.Comments.Add(comment);
+    await _notificationHub.Clients.User(post.UserId.ToString()).SendAsync("ReceiveNotification", notification.Message);
+    return Ok();
+}
+
+public async Task<IActionResult> AddComment(int postId, string content, int? parentCommentId)
+{
+    var userId = int.Parse(User.FindFirstValue("UserId"));
+    var comment = new Comment
+    {
+        PostId = postId,
+        UserId = userId,
+        Content = content,
+        ParentCommentId = parentCommentId
+    };
+
+    _context.Comments.Add(comment);
+    await _context.SaveChangesAsync();
+
+    var post = await _context.Posts.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == postId);
+    if (post.UserId != userId)
+    {
+        var notification = new Notification
+        {
+            UserId = post.UserId,
+            Type = NotificationType.Comment,
+            PostId = postId,
+            Message = $"@{User.Identity.Name} comentou no seu post!"
+        };
+        _context.Notifications.Add(notification);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("Index", new { postId });
+        await _notificationHub.Clients.User(post.UserId.ToString()).SendAsync("ReceiveNotification", notification.Message);
     }
 
+    return RedirectToAction("Index", new { postId });
+}
 
     public IActionResult EditPost(int postId)
     {

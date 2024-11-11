@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -294,14 +295,8 @@ public class UsersController : Controller
         var follower = await _context.Users.FindAsync(followerUserId);
 
         if (follower == null)
-            return BadRequest("Usuário seguidor não encontrado.");
+            return BadRequest("Seguidor não encontrado.");
 
-        var existingFollow = await _context.Follows
-            .FirstOrDefaultAsync(f => f.FollowerId == followerUserId && f.FollowedId == followedUserId);
-
-        if (existingFollow != null)
-            return BadRequest("Você já está seguindo este usuário.");
-        
         var follow = new Follow
         {
             FollowerId = followerUserId,
@@ -311,10 +306,17 @@ public class UsersController : Controller
         _context.Follows.Add(follow);
         await _context.SaveChangesAsync();
 
-        var message = $"@{follower.Username} te seguiu!";
-        Console.WriteLine($"Enviando notificação para usuário {followedUserId}: {message}");
-        await _notificationHub.Clients.User(followedUserId.ToString()).SendAsync("ReceiveNotification", message);
+        var notification = new Notification
+        {
+            UserId = followedUserId,
+            Type = NotificationType.NewFollower,
+            Message = $"@{follower.Username} te seguiu"
+        };
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync();
 
+        await _notificationHub.Clients.User(followedUserId.ToString())
+            .SendAsync("ReceiveNotification", notification.Message);
         return Ok();
     }
 
