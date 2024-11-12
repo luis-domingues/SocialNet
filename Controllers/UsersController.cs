@@ -188,6 +188,21 @@ public class UsersController : Controller
 
         return View(updatedUser);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateBio(string bio)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+        var user = await _context.Users.FindAsync(userId);
+        
+        if(user == null)
+            return NotFound();
+
+        user.Bio = bio;
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Profile");
+    }
     
     public IActionResult Following()
     {
