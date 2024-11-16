@@ -16,10 +16,17 @@ SocialNET is a web application inspired by Twitter/X and Bluesky, allowing users
 
 ## Updates
 
-* Improvement in the `user's personal feed`, being able to create, publish and view posts in the personal feed.
-* Added `edit`, `delete`, `like` and `comment` features to posts, as well as being able to follow or unfollow other profiles.
-* Added user profile tab.
-* Search bar.
+* ☑️ Sign Up and Login options.
+* ⏳ Password recovery.
+* ☑️ Personal feed
+- * Publish posts
+- * View posts from users you follow
+- * Interaction on posts (e.g. Likes and Comments – this includes your own posts as well)
+- * Update and Delete posts, comments and Remove likes
+- * **Thread System**
+* ☑️ Personal user profile
+* ☑️ View other users' profiles
+* ⏳ Real-time notification system
 
 ## Usage
 
@@ -41,7 +48,7 @@ To install SocialNET, you can clone the repository and run it locally.
     ```
 
 ### Features in development
-Real-time notification system.
+Redesign of the frontend of the pages
 
 ## Contributing
 Feel free to contribute by opening an issue to report a bug or suggest improvements or features.
