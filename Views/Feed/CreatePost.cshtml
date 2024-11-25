@@ -1,15 +1,22 @@
 ﻿@model SocialNet.Models.Post
 
 @{
-    ViewData["Title"] = "Criar Post";
+ViewData["Title"] = "Criar Post";
 }
 
-<form asp-action="CreatePost" method="post">
-    <div class="form-group">
-        <label asp-for="Content">O que há de novo?</label>
-        <textarea asp-for="Content" class="form-control" rows="3" required></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
+<div class="d-flex justify-content-center mt-5">
+    <div style="width: 100%; max-width: 600px;">
+        <h4 class="text-center mb-4" style="color: #6f42c1;">O que há de novo?</h4>
+
+        <form asp-action="CreatePost" method="post">
+            <div class="form-group mb-3">
+                <textarea asp-for="Content" class="form-control" rows="6" placeholder="Compartilhe algo com seus amigos..." required style="resize: none;"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn text-white w-100" style="background-color: #6f42c1; border: 1px solid #6f42c1;">
+                Postar
+            </button>
+        </form>
     </div>
-    <br />
-    <input type="submit" value="Postar" class="btn btn-primary"/>
-</form>
+</div>
