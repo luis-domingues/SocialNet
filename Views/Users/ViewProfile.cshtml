@@ -1,25 +1,33 @@
 ﻿@model SocialNet.Models.User
 
 @{
-    ViewData["Title"] = "Perfil";
-    var currentUserId = int.Parse(User.Claims.First(c => c.Type == "UserId").Value);
-    var isFollowing = Model.Followers.Any(f => f.FollowerId == currentUserId);
+ViewData["Title"] = "Perfil";
+var currentUserId = int.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+var isFollowing = Model.Followers.Any(f => f.FollowerId == currentUserId);
 }
 
-<div class="container">
-    <h2>@Model.Username</h2>
-    
-    <div class="card mb-4">
+<div class="container mt-4">
+    <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <p>@Model.Bio</p>
-            <br/>
-            <p>Seguidores: @Model.Followers.Count</p>
-            <p>Seguindo: @Model.Following.Count</p>
-        </div>
-        <div class="mt-3">
+            <h2 class="mb-2">@Model.Username</h2>
+            <p class="text-muted">@Model.Email</p>
+
+            <p class="mt-3">@Model.Bio ?? "Nenhuma biografia disponível."</p>
+
+            <div class="d-flex mt-3">
+                <div class="me-4">
+                    <strong>@Model.Followers.Count</strong>
+                    <p class="text-muted"><a asp-action="Followers" class="text-decoration-none">Seguidores</a></p>
+                </div>
+                <div>
+                    <strong>@Model.Following.Count</strong>
+                    <p class="text-muted"><a asp-action="Following" class="text-decoration-none">Seguindo</a></p>
+                </div>
+            </div>
+
             @if (Model.Id != currentUserId)
             {
-            <form asp-action="ToggleFollow" asp-controller="Users" asp-route-userId="@Model.Id" method="post">
+            <form asp-action="ToggleFollow" asp-controller="Users" asp-route-userId="@Model.Id" method="post" class="mt-3">
                 <button type="submit" class="btn btn-sm @(isFollowing ? "btn-danger" : "btn-primary")">
                     @(isFollowing ? "Deixar de seguir" : "Seguir")
                 </button>
@@ -30,14 +38,21 @@
 
     <h3 class="mt-4">Posts de @Model.Username</h3>
     <div>
-        @foreach (var post in Model.Posts)
+        @if (Model.Posts.Any())
         {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <p class="card-text">@post.Content</p>
-                    <p class="text-muted">@post.CreateAt.ToString("g")</p>
-                </div>
+        @foreach (var post in Model.Posts.OrderByDescending(p => p.CreateAt))
+        {
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <p class="card-text">@post.Content</p>
+                <p class="text-muted small">@post.CreateAt.ToString("g")</p>
             </div>
+        </div>
+        }
+        }
+        else
+        {
+        <p class="text-muted">Nenhum post encontrado.</p>
         }
     </div>
 </div>
