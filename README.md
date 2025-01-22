@@ -17,7 +17,7 @@ SocialNET is a web application inspired by Twitter/X and Bluesky, allowing users
 ## Updates
 
 * ☑️ Sign Up and Login options.
-* ⏳ Password recovery.
+* ☑️ Password recovery.
 * ☑️ Personal feed
 - * Publish posts
 - * View posts from users you follow
@@ -26,7 +26,7 @@ SocialNET is a web application inspired by Twitter/X and Bluesky, allowing users
 - * **Thread System**
 * ☑️ Personal user profile
 * ☑️ View other users' profiles
-* ⏳ Real-time notification system
+* ☑️ Real-time notification system
 
 ## Usage
 
