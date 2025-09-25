@@ -1,0 +1,19 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider/JetBrains
+.idea/
+
+# Node/Tailwind
+node_modules/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
